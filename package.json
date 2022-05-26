@@ -1,11 +1,11 @@
 {
   "name": "osu-renderer-wrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple way to create replay beatmaps osu",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "exit 0"
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",

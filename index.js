@@ -116,7 +116,7 @@ class RenderProgress {
 class RenderDone {
 	constructor(data) {
 		this.renderID = data.renderID;
-		this.videoURL = data.videoUrL;
+		this.videoURL = data.videoUrl;
 	}
 }
 
@@ -227,6 +227,8 @@ class OsuRenderer extends EventEmitter {
 			this.cache.set(data.renderID, replayData);
             this.emit("done", data.renderID, replayData);
 		} else if (data instanceof RenderFailed) {
+            const replayData = this.cache.get(data.renderID);
+			if (!replayData) return;
 			this.cache.delete(data.renderID);
             this.emit("error", data.renderID, data);
 		}

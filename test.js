@@ -15,8 +15,9 @@ client
 	.on('error', (id, beatmap) => {
 		console.log('Error', id, beatmap);
 	});
-
-setTimeout(() => {
-    client.upload('./test.osr', 'azur_lane_laffey');
-    console.log('upload');
+console.log("Uploading beatmap... (10s timeout)");
+setTimeout(async () => {
+    await client.upload('./test.osr', 'azur_lane_laffey');
+	console.log(client.rateLimitReset - (Date.now() / 1000));
+    console.log('Upload (Cooldown 5m)');
 }, 10000);
