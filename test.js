@@ -1,4 +1,4 @@
-const test = require('osu-renderer-wrapper');
+const test = require('./index');
 
 const client = new test();
 
