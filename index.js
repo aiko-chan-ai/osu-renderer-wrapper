@@ -192,7 +192,7 @@ class OsuRenderer extends EventEmitter {
 	__getSkin() {
 		return new Promise((resolve, reject) => {
 			axios
-				.get('https://apis.issou.best/ordr/skins')
+				.get(`${apiUrl}skins`)
 				.then(({ data }) => {
 					data.skins.forEach((skin) => {
 						this.avaliableSkin.set(skin.id, skin);
