@@ -166,7 +166,7 @@ class ReplayData {
 		this.byteLength = this.rawData.replay_length;
 		this.renderID = null;
 		this.videoURL = null;
-		this.progress = 'Rendering... (0%)';
+		this.progress = '';
 		this.description = '';
         this.fix();
 	}
