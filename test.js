@@ -2,7 +2,8 @@ const test = require('./index');
 const HttpsProxyAgent = require("https-proxy-agent");
 // HTTP / HTTPS Proxy
 const httpsAgent = new HttpsProxyAgent({host: "proxyhost", port: "proxyport", auth: "username:password"});
-const client = new test();
+const apikey = 'blablablablabla'; // using without ratelimit
+const client = new test(apikey);
 
 client
 	.on('added', (id, beatmap) => {
