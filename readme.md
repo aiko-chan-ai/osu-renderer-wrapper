@@ -79,7 +79,8 @@ ReplayData {
 
 - upload
   - path: string (fs.path)
-  - skin: string (Skin name)
+  - skin: string (Skin name) | 'random'
+  - proxy: (Optional) HttpsProxyAgent | true (random proxy) | undefined
   
 
 ## There is also a lot of other data, you can see the source :))

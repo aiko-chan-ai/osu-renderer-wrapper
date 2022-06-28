@@ -154,7 +154,9 @@ declare class OsuRenderer extends EventEmitter {
 	cache: Collection<number, ReplayData>;
 	avaliableSkin: Collection<SkinID, Skin>;
 	rateLimitReset: number;
-	upload(path: string, skin: string): Promise<unknown>;
+    proxyCache: Collection<ID, Object>;
+	upload(path: string, skin: string, proxy: any): Promise<any>;
+    freeProxy(): Promise<Object | undefined>;
 	public on<K extends keyof ClientEvents>(
 		event: K,
 		listener: (...args: ClientEvents[K]) => Awaitable<void>,
@@ -192,6 +194,7 @@ declare class OsuRenderer extends EventEmitter {
 	): this;
 }
 export interface ClientEvents {
+    ready: [];
 	added: [renderId: number, beatmap: ReplayData];
 	progress: [renderId: number, beatmap: ReplayData];
 	done: [renderId: number, beatmap: ReplayData];

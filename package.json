@@ -1,6 +1,6 @@
 {
   "name": "osu-renderer-wrapper",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A simple way to create replay beatmaps osu",
   "main": "index.js",
   "types": "index.d.ts",
@@ -25,6 +25,7 @@
   "dependencies": {
     "@discordjs/collection": "^0.7.0",
     "axios": "^0.27.2",
+    "https-proxy-agent": "^5.0.1",
     "osureplayparser": "^1.0.1",
     "socket.io-client": "^4.5.1"
   }

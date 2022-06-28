@@ -1,5 +1,7 @@
 const test = require('./index');
-
+const HttpsProxyAgent = require("https-proxy-agent");
+// HTTP / HTTPS Proxy
+const httpsAgent = new HttpsProxyAgent({host: "proxyhost", port: "proxyport", auth: "username:password"});
 const client = new test();
 
 client
@@ -14,10 +16,20 @@ client
 	})
 	.on('error', (id, beatmap) => {
 		console.log('Error', id, beatmap);
+	})
+	.on('ready', async () => {
+		console.log("Uploading beatmap... (1s timeout)");
+		setTimeout(async () => {
+			// without proxy (Rate limit)
+			await client.upload('./test.osr', 'random');
+			// with proxy (No ratelimit)
+			/*
+			// Custom proxy
+			await client.upload('./test.osr', 'azur_lane_laffey', httpsAgent);
+			// Random proxy (half working)
+			await client.upload('./test.osr', 'random', true);
+			*/
+			console.log(client.rateLimitReset - (Date.now() / 1000));
+			console.log('Upload (Cooldown 5m)');
+		}, 1_000);
 	});
-console.log("Uploading beatmap... (10s timeout)");
-setTimeout(async () => {
-    await client.upload('./test.osr', 'azur_lane_laffey');
-	console.log(client.rateLimitReset - (Date.now() / 1000));
-    console.log('Upload (Cooldown 5m)');
-}, 10000);

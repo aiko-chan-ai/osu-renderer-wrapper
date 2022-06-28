@@ -6,6 +6,7 @@ const EventEmitter = require('events');
 const { Collection } = require('@discordjs/collection');
 const { parseReplay } = require('osureplayparser');
 const FormData = require('form-data');
+const HttpsProxyAgent = require("https-proxy-agent");
 // Define data
 const socketUrl = 'https://ordr-ws.issou.best';
 const apiUrl = 'https://apis.issou.best/ordr/';
@@ -183,7 +184,17 @@ class OsuRenderer extends EventEmitter {
 		this.cache = new Collection(); // Collection<RenderID, ReplayData>
 		this.avaliableSkin = new Collection(); // Collection<SkinID, SkinData>
 		this.rateLimitReset = 0;
-		this.__getSkin();
+		this.proxyCache = new Collection();
+		this._clearProxy();
+		this.__getSkin().then(() => this.emit('ready'));
+	}
+	/**
+	 * @private
+	 */
+	_clearProxy() {
+		setInterval(() => {
+			this.proxyCache = new Collection();
+		}, 60_000);
 	}
     /**
      * @private
@@ -257,13 +268,34 @@ class OsuRenderer extends EventEmitter {
 			this.__updateData(new RenderFailed(data));
 		});
 	}
-	async upload(path, skin) {
+	async freeProxy() {
+		if (this.proxyCache.size == 0) {
+			const res = await axios.get('https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=elite,anonymous').catch(() => {});
+			if (res) {
+				res.data.replace(RegExp('\r\n', 'ig'), '\n').split('\n').filter(r_ => r_.includes(':')).map((v , i) => {
+					this.proxyCache.set(i, new Object({host: v.split(':')[0], port: v.split(':')[1] }));
+				});
+			}
+		}
+		if (this.proxyCache.size !== 0) return this.proxyCache.random();
+		else return undefined;
+		// API by Proxyscrape
+	}
+	async upload(path, skin, proxy) {
+		if (skin == 'random') skin = this.avaliableSkin.random().skin;
 		if (
 			!this.avaliableSkin.get(skin) &&
 			!this.avaliableSkin.find((s) => s.skin == skin)?.skin
 		)
 			throw new Error('Skin not found');
-		if (Date.now() / 1000 < this.rateLimitReset)
+		if (proxy == true) {
+			const proxyObject = await this.freeProxy();
+			if (proxyObject) {
+				proxy = new HttpsProxyAgent({ host: proxyObject.host , port: proxyObject.port });
+			}
+		}
+		const axios_ = typeof proxy == 'object' ? axios.create({ httpsAgent: proxy }) : axios;
+		if (Date.now() / 1000 < this.rateLimitReset && !proxy)
 			throw new Error('Rate limit exceeded');
 		// check
 		const replayData = new ReplayData(path);
@@ -280,14 +312,14 @@ class OsuRenderer extends EventEmitter {
 		bodyForm.append('hitsoundVolume', 100);
 		bodyForm.append('skin', skin);
 		return new Promise((resolve, reject) => {
-			axios({
+			axios_({
 				method: 'post',
 				url: apiUrl + 'renders',
 				data: bodyForm,
 				headers: { 'Content-Type': 'multipart/form-data' },
 			}).then(response => {
                 replayData.renderID = response.data.renderID;
-                this.rateLimitReset = response.headers['x-ratelimit-reset'];
+                if (!proxy) this.rateLimitReset = response.headers['x-ratelimit-reset'];
                 this.cache.set(replayData.renderID, replayData);
                 this.emit('added', replayData.renderID, replayData);
                 resolve(replayData);
