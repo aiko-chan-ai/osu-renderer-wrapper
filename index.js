@@ -283,7 +283,7 @@ class OsuRenderer extends EventEmitter {
 		else return undefined;
 		// API by Proxyscrape
 	}
-	async upload(path, skin, proxy) {
+	async upload(path, skin, proxy, username) {
 		if (skin == 'random') skin = this.avaliableSkin.random().skin;
 		if (
 			!this.avaliableSkin.get(skin) &&
@@ -304,13 +304,13 @@ class OsuRenderer extends EventEmitter {
 		bodyForm.append('replayFile', fs.createReadStream(path));
 		bodyForm.append(
 			'username',
-			'BotName' + Math.random().toString(36).substring(7),
+			username || 'Bot',
 		);
 		bodyForm.append('resolution', '1280x720');
 		bodyForm.append('globalVolume', 100);
 		bodyForm.append('musicVolume', 100);
 		bodyForm.append('hitsoundVolume', 100);
-		if (this.key) bodyForm.addend('verificationKey', this.key);
+		if (this.key) bodyForm.append('verificationKey', this.key);
 		bodyForm.append('skin', skin);
 		return new Promise((resolve, reject) => {
 			axios_({

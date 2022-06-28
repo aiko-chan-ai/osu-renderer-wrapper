@@ -156,7 +156,7 @@ declare class OsuRenderer extends EventEmitter {
     key: string;
 	rateLimitReset: number;
     proxyCache: Collection<ID, Object>;
-	upload(path: string, skin: string, proxy?: any): Promise<any>;
+	upload(path: string, skin: string, proxy?: any, username?: string): Promise<any>;
     freeProxy(): Promise<Object | undefined>;
 	public on<K extends keyof ClientEvents>(
 		event: K,

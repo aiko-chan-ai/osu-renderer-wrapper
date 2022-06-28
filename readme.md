@@ -81,6 +81,9 @@ ReplayData {
   - path: string (fs.path)
   - skin: string (Skin name) | 'random'
   - proxy: (Optional) HttpsProxyAgent | true (random proxy) | undefined
+  - username: (Optional) string
   
 
 ## There is also a lot of other data, you can see the source :))
+
+# Thank a lot of o!rdr, MasterIO#4588 (Owner API)
