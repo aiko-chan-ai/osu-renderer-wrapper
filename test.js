@@ -21,7 +21,9 @@ client
 		console.log("Uploading beatmap... (1s timeout)");
 		setTimeout(async () => {
 			// without proxy (Rate limit)
-			await client.upload('./test.osr', 'random');
+			await client.upload('./test', 'random').catch((e) => {
+				console.log(e);
+			});
 			// with proxy (No ratelimit)
 			/*
 			// Custom proxy

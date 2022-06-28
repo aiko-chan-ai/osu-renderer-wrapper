@@ -132,10 +132,11 @@ class RenderFailed extends Error {
 
 class UploadFailed extends Error {
     constructor(data) {
-        super(HTTPError[`${data.errorCode}`] || data.message);
-        this.errorCode = data.errorCode;
-        this.errorMessage = data.message;
-        this.reason = data.reason;
+        super(typeof data.response?.data == 'object' ? `${HTTPError[`${data.response?.data.errorCode}`] || ''} ${data.response?.data.message || ''}` : data.response?.data || data.message);
+        this.errorCode = typeof data.response?.data == 'object' ? data.response?.data?.errorCode : data.errorCode;
+        this.errorMessage = typeof data.response?.data == 'object' ?  data.response?.data?.message : data.message;
+        this.reason = typeof data.response?.data == 'object' ?  data.response?.data?.reason : undefined;
+		this.response = data.response;
     }
 }
 
@@ -177,7 +178,7 @@ class ReplayData {
 }
 
 class OsuRenderer extends EventEmitter {
-	constructor() {
+	constructor(APIKey) {
         super();
 		this.socket = io.connect(socketUrl);
 		this.__loadEvent(this.socket);
@@ -185,6 +186,7 @@ class OsuRenderer extends EventEmitter {
 		this.avaliableSkin = new Collection(); // Collection<SkinID, SkinData>
 		this.rateLimitReset = 0;
 		this.proxyCache = new Collection();
+		this.key = APIKey;
 		this._clearProxy();
 		this.__getSkin().then(() => this.emit('ready'));
 	}
@@ -295,8 +297,6 @@ class OsuRenderer extends EventEmitter {
 			}
 		}
 		const axios_ = typeof proxy == 'object' ? axios.create({ httpsAgent: proxy }) : axios;
-		if (Date.now() / 1000 < this.rateLimitReset && !proxy)
-			throw new Error('Rate limit exceeded');
 		// check
 		const replayData = new ReplayData(path);
 		// send
@@ -310,6 +310,7 @@ class OsuRenderer extends EventEmitter {
 		bodyForm.append('globalVolume', 100);
 		bodyForm.append('musicVolume', 100);
 		bodyForm.append('hitsoundVolume', 100);
+		if (this.key) bodyForm.addend('verificationKey', this.key);
 		bodyForm.append('skin', skin);
 		return new Promise((resolve, reject) => {
 			axios_({

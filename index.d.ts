@@ -150,12 +150,13 @@ declare type Counting = {
 	mods: number;
 };
 declare class OsuRenderer extends EventEmitter {
-	constructor();
+	constructor(APIKey?: string);
 	cache: Collection<number, ReplayData>;
 	avaliableSkin: Collection<SkinID, Skin>;
+    key: string;
 	rateLimitReset: number;
     proxyCache: Collection<ID, Object>;
-	upload(path: string, skin: string, proxy: any): Promise<any>;
+	upload(path: string, skin: string, proxy?: any): Promise<any>;
     freeProxy(): Promise<Object | undefined>;
 	public on<K extends keyof ClientEvents>(
 		event: K,
