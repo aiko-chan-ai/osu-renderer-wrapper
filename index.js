@@ -327,10 +327,29 @@ class OsuRenderer extends EventEmitter {
 			'username',
 			options?.username || 'Bot',
 		);
-		bodyForm.append('resolution', '1280x720');
+		let resolution;
+		switch (options?.resolution) {
+			case 1080: {
+				resolution = '1920x1080';
+				break;
+			}
+			case 540: {
+				resolution = '960x540';
+				break;
+			}
+			case 480: {
+				resolution = '720x480';
+				break;
+			}
+			default: {
+				resolution = '1280x720';
+				break;
+			}
+		}
+		bodyForm.append('resolution', resolution);
 		bodyForm.append('globalVolume', typeof options?.globalVolume == 'number' ? options?.globalVolume : 100);
 		bodyForm.append('musicVolume', typeof options?.musicVolume == 'number' ? options?.musicVolume : 100);
-		bodyForm.append('hitsoundVolume', typeof options?.hitsoundVolume == 'number' ? options?.hitsoundVolume : 100);
+		bodyForm.append('hitsoundVolume', typeof options?.hitsoundVolume == 'number' ? options?.hitsoundVolume : 70);
 		bodyForm.append('seizureWarning', typeof options?.seizureWarning == 'boolean' ? `${options?.seizureWarning}` : 'true');
 		bodyForm.append('showDanserLogo', typeof options?.showDanserLogo == 'boolean' ? `${options?.showDanserLogo}` : 'false');
 		bodyForm.append('skip', typeof options?.skip == 'boolean' ? `${options?.skip}` : 'true');

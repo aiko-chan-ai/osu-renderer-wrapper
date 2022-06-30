@@ -83,6 +83,14 @@ ReplayData {
   - proxy: (Optional) HttpsProxyAgent | true (random proxy) | undefined
   - option: (Optional) Object https://ordr.issou.best/docs/#operation/3
   
+* option: 
+ - username: bot name (default: Bot)
+ - resolution: 
+  - 1080: 1080p, 60fps
+  - 720: 720p, 30fps (default)
+  - 540: 540p, 30fps
+  - 480: 480p, 30fps
+ - Other: See https://ordr.issou.best/docs/#operation/3
 
 ## There is also a lot of other data, you can see the source :))
 

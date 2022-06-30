@@ -154,6 +154,7 @@ declare type ORDROptions = {
     musicVolume: number;
     hitsoundVolume: number;
     username: string;
+    resolution: 480 | 540 | 720 | 1080 | undefined;
     showHitErrorMeter: boolean;
     showUnstableRate: boolean;
     showScore: boolean;
