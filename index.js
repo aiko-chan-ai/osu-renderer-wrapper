@@ -283,7 +283,19 @@ class OsuRenderer extends EventEmitter {
 		else return undefined;
 		// API by Proxyscrape
 	}
-	async upload(path, skin, proxy, username) {
+	/**
+	 * 
+	 * @param {string} path File like
+	 * @param {string} skin Skin name
+	 * @param {Proxy} proxy Proxy (optional)
+	 * @param {ORDROptions} options @see https://ordr.issou.best/docs/#operation/3
+     * @tutorial See the o!rdr Documentation: {@link https://ordr.issou.best/docs}
+     * @example client.upload('./test.osr', 'random', false, {
+	 * 	username: 'bot name',
+	 * });
+     * @return {Promise<Object>}
+	 */
+	async upload(path, skin, proxy, options = {}) {
 		if (skin == 'random') skin = this.avaliableSkin.random().skin;
 		if (
 			!this.avaliableSkin.get(skin) &&
@@ -304,13 +316,66 @@ class OsuRenderer extends EventEmitter {
 		bodyForm.append('replayFile', fs.createReadStream(path));
 		bodyForm.append(
 			'username',
-			username || 'Bot',
+			options?.username || 'Bot',
 		);
 		bodyForm.append('resolution', '1280x720');
-		bodyForm.append('globalVolume', 100);
-		bodyForm.append('musicVolume', 100);
-		bodyForm.append('hitsoundVolume', 100);
-		if (this.key) bodyForm.append('verificationKey', this.key);
+		bodyForm.append('globalVolume', typeof options?.globalVolume == 'number' ? options?.globalVolume : 100);
+		bodyForm.append('musicVolume', typeof options?.musicVolume == 'number' ? options?.musicVolume : 100);
+		bodyForm.append('hitsoundVolume', typeof options?.hitsoundVolume == 'number' ? options?.hitsoundVolume : 100);
+		bodyForm.append('seizureWarning', typeof options?.seizureWarning == 'boolean' ? `${options?.seizureWarning}` : 'true');
+		bodyForm.append('showDanserLogo', typeof options?.showDanserLogo == 'boolean' ? `${options?.showDanserLogo}` : 'false');
+		bodyForm.append('skip', typeof options?.skip == 'boolean' ? `${options?.skip}` : 'true');
+		// Valid options
+		const validOptions = [
+			'showHitErrorMeter',
+			'showUnstableRate',
+			'showScore',
+			'showHPBar',
+			'showComboCounter',
+			'showPPCounter',
+			'showScoreboard',
+			'showBorders',
+			'showMods',
+			'showResultScreen',
+			'useSkinCursor',
+			'useSkinColors',
+			'useSkinHitsounds',
+			'useBeatmapColors',
+			'cursorScaleToCS',
+			'cursorRainbow',
+			'cursorTrailGlow',
+			'drawFollowPoints',
+			'scaleToTheBeat',
+			'sliderMerge',
+			'objectsRainbow',
+			'objectsFlashToTheBeat',
+			'useHitCircleColor',
+			'loadStoryboard',
+			'loadVideo',
+			'introBGDim',
+			'inGameBGDim',
+			'breakBGDim',
+			'BGParallax',
+			'cursorRipples',
+			'cursorSize',
+			'cursorTrail',
+			'drawComboNumbers',
+			'sliderSnakingIn',
+			'sliderSnakingOut',
+			'showHitCounter',
+			'showKeyOverlay',
+			'showAvatarsOnScoreboard',
+			'showAimErrorMeter',
+			'playNightcoreSamples',
+		]
+		if (typeof options == 'object') {
+			const option = Object.entries(options)
+			.filter(value => validOptions.includes(value[0]))
+			option.map(array => {
+				bodyForm.append(array[0], typeof array[1] == 'boolean' ? `${array[1]}` : array[1]);
+			});
+		}
+		if (this.key && this.key !== '') bodyForm.append('verificationKey', this.key);
 		bodyForm.append('skin', skin);
 		return new Promise((resolve, reject) => {
 			axios_({

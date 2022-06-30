@@ -149,6 +149,55 @@ declare type Counting = {
 	perfect_combo: number;
 	mods: number;
 };
+declare type ORDROptions = {
+    globalVolume: number;
+    musicVolume: number;
+    hitsoundVolume: number;
+    username: string;
+    showHitErrorMeter: boolean;
+    showUnstableRate: boolean;
+    showScore: boolean;
+    showHPBar: boolean;
+    showComboCounter: boolean;
+    showPPCounter: boolean;
+    showScoreboard: boolean;
+    showBorders: boolean;
+    showMods: boolean;
+    showResultScreen: boolean;
+    useSkinCursor: boolean;
+    useSkinColors: boolean;
+    useSkinHitsounds: boolean;
+    useBeatmapColors: boolean;
+    cursorScaleToCS: boolean;
+    cursorRainbow: boolean;
+    cursorTrailGlow: boolean;
+    drawFollowPoints: boolean;
+    scaleToTheBeat: boolean;
+    sliderMerge: boolean;
+    objectsRainbow: boolean;
+    objectsFlashToTheBeat: boolean;
+    useHitCircleColor: boolean;
+    seizureWarning: boolean;
+    loadStoryboard: boolean;
+    loadVideo: boolean;
+    introBGDim: number;
+    inGameBGDim: number;
+    breakBGDim: number;
+    BGParallax: boolean;
+    showDanserLogo: boolean;
+    skip: boolean;
+    cursorRipples: boolean;
+    cursorSize: number;
+    cursorTrail: boolean;
+    drawComboNumbers: boolean;
+    sliderSnakingIn: boolean;
+    sliderSnakingOut: boolean;
+    showHitCounter: boolean;
+    showKeyOverlay: boolean;
+    showAvatarsOnScoreboard: boolean;
+    showAimErrorMeter: boolean;
+    playNightcoreSamples: boolean;
+}
 declare class OsuRenderer extends EventEmitter {
 	constructor(APIKey?: string);
 	cache: Collection<number, ReplayData>;
@@ -156,7 +205,7 @@ declare class OsuRenderer extends EventEmitter {
     key: string;
 	rateLimitReset: number;
     proxyCache: Collection<ID, Object>;
-	upload(path: string, skin: string, proxy?: any, username?: string): Promise<any>;
+	upload(path: string, skin: string, proxy?: any, options?: ORDROptions): Promise<any>;
     freeProxy(): Promise<Object | undefined>;
 	public on<K extends keyof ClientEvents>(
 		event: K,

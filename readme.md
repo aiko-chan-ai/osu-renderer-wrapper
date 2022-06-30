@@ -81,7 +81,7 @@ ReplayData {
   - path: string (fs.path)
   - skin: string (Skin name) | 'random'
   - proxy: (Optional) HttpsProxyAgent | true (random proxy) | undefined
-  - username: (Optional) string
+  - option: (Optional) Object https://ordr.issou.best/docs/#operation/3
   
 
 ## There is also a lot of other data, you can see the source :))
