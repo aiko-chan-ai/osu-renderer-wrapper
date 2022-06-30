@@ -4,7 +4,6 @@ const HttpsProxyAgent = require("https-proxy-agent");
 const httpsAgent = new HttpsProxyAgent({host: "proxyhost", port: "proxyport", auth: "username:password"});
 const apikey = 'blablablablabla'; // using without ratelimit
 const client = new test(apikey);
-
 client
 	.on('added', (id, beatmap) => {
 		console.log('Added', id, beatmap);
@@ -21,6 +20,8 @@ client
 	.on('ready', async () => {
 		console.log("Uploading beatmap... (1s timeout)");
 		setTimeout(async () => {
+			// All skin
+			console.log(client.avaliableSkin);
 			// without proxy (Rate limit)
 			await client.upload('./test.osr', 'random', false).catch((e) => {
 				console.log(e);

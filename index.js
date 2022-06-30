@@ -202,14 +202,26 @@ class OsuRenderer extends EventEmitter {
      * @private
      * @returns {Promise<Collection<SkinID, SkinData>>}
      */
-	__getSkin() {
+	__getSkin(page = 1) {
 		return new Promise((resolve, reject) => {
 			axios
-				.get(`${apiUrl}skins`)
-				.then(({ data }) => {
-					data.skins.forEach((skin) => {
-						this.avaliableSkin.set(skin.id, skin);
-					});
+				.get(`${apiUrl}skins?page=${page}&pageSize=100`)
+				.then(async ({ data }) => {
+					const maxPage = data.maxSkins;
+					if (maxPage > 100 && page == 1) {
+						const count = (maxPage % 100 == 0 ? maxPage / 100 : Math.floor(maxPage / 100) + 1);
+						/*
+						for (let i = 2; i <= count ; i++) {
+							await this.__getSkin(i);
+						}
+						*/
+						await Promise.all((new Array(count - 1).fill('test')).map(async (n , v) => {
+							await this.__getSkin(v + 2);
+						}));
+					}
+					for await (const skin of data.skins) {
+						this.avaliableSkin.set(skin.alphabeticalId, skin);
+					}
 					resolve(true);
 				})
 				.catch((e) => reject(e));
@@ -295,13 +307,10 @@ class OsuRenderer extends EventEmitter {
 	 * });
      * @return {Promise<Object>}
 	 */
-	async upload(path, skin, proxy, options = {}) {
-		if (skin == 'random') skin = this.avaliableSkin.random().skin;
-		if (
-			!this.avaliableSkin.get(skin) &&
-			!this.avaliableSkin.find((s) => s.skin == skin)?.skin
-		)
-			throw new Error('Skin not found');
+	async upload(path, skin = '', proxy, options = {}) {
+		if (skin?.toLowerCase() == 'random') skin = this.avaliableSkin.random().skin;
+		const skin_ = this.avaliableSkin.get(skin) || this.avaliableSkin.find((s) => s.skin == skin) || this.avaliableSkin.find((s) => s.id == skin);
+		if(!skin_) throw new Error('Skin not found');
 		if (proxy == true) {
 			const proxyObject = await this.freeProxy();
 			if (proxyObject) {
