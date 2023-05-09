@@ -302,7 +302,7 @@ class OsuRenderClient extends EventEmitter {
 				.catch(reject);
 		});
 	}
-	public async requestRender(file: FileLike, options: RequestRenderOptions): Promise<boolean> {
+	public async requestRender(file: FileLike, options: RequestRenderOptions): Promise<Render> {
 		if (!this.isReady) throw new Error('Client is not ready yet!');
 		if (this.rateLimitInfo.getTime() > Date.now()) {
 			throw new Error(
@@ -364,11 +364,12 @@ class OsuRenderClient extends EventEmitter {
 					this.#_rateLimitData = Number(
 						response.headers['x-ratelimit-reset'] ?? 0,
 					);
+					const beatmap = new Render(this, response.data);
 					this.cache.set(
 						response.data.renderID,
-						new Render(this, response.data),
+						beatmap,
 					);
-					resolve(true);
+					resolve(beatmap);
 				})
 				.catch(reject);
 		});
