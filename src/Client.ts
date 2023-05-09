@@ -1,5 +1,6 @@
 import EventEmitter from 'node:events';
 import { io, Socket } from 'socket.io-client';
+import { Readable } from 'node:stream';
 import axios from 'axios';
 import FormData from 'form-data';
 import {
@@ -350,7 +351,7 @@ class OsuRenderClient extends EventEmitter {
 		const file_ = await resolveFile(file, options.handleFileURL);
 		if (this.key && this.key !== '')
 			bodyForm.append('verificationKey', this.key);
-		if (typeof file !== 'string') bodyForm.append('replayFile', file_);
+		if (file_ instanceof Readable) bodyForm.append('replayFile', file_);
 		else bodyForm.append('replayURL', file_);
 		return new Promise((resolve, reject) => {
 			axios({

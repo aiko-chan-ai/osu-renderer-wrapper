@@ -7,6 +7,6 @@ $ npm install osu-renderer-wrapper
 ```
 
 ## Example
-- Test file [here](https://github.com/aiko-chan-ai/osu-renderer-wrapper/blob/main/test.js)
+- Test file [here](https://github.com/aiko-chan-ai/osu-renderer-wrapper/blob/v2/test.js)
 
 # Thank a lot of o!rdr, MasterIO#4588 (Owner API)
