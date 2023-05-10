@@ -323,16 +323,16 @@ class OsuRenderClient extends EventEmitter {
 		const bodyForm = new FormData();
 		bodyForm.append('username', options.username);
 		switch (options.resolution) {
-			case 720: {
-				bodyForm.append('resolution', '1280x720');
-				break;
-			}
 			case 540: {
 				bodyForm.append('resolution', '960x540');
 				break;
 			}
 			case 480: {
 				bodyForm.append('resolution', '720x480');
+				break;
+			}
+			default: {
+				bodyForm.append('resolution', '1280x720');
 				break;
 			}
 		}
@@ -346,7 +346,7 @@ class OsuRenderClient extends EventEmitter {
 			// Skip undefined value
 			if (value === undefined) return;
 			// Append to form
-			bodyForm.append(key, value);
+			bodyForm.append(key, `${value}`);
 		});
 		const file_ = await resolveFile(file, options.handleFileURL);
 		if (this.key && this.key !== '')
