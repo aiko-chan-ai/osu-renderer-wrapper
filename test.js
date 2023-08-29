@@ -9,13 +9,12 @@ const client = new MyLib.OsuRenderClient({
 client.on('ready', () => {
     console.log('Client Ready');
     client.requestRender(
-		'https://cdn.discordapp.com/attachments/878276279105884210/1105483096364683384/test.osr',
-        // or './test.osr'
-        {
-            username: 'aiko',
-            resolution: 480,
-            skin: 'minato_aqua',
-        }
+		'https://cdn.discordapp.com/attachments/820557032016969751/1146067314517753876/test.osr',
+		{
+			username: 'aiko',
+			resolution: 480,
+			skin: 'minato_aqua',
+		},
 	);
 });
 

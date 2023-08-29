@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { Readable } from 'node:stream';
 import axios from 'axios';
 import FormData from 'form-data';
+import { Collection } from '@discordjs/collection';
 import {
 	WebSocketEndpoint,
 	WebSocketEventName,
@@ -39,6 +40,35 @@ function Wrapper<T extends object>(): new (init: T) => T {
 	} as any;
 }
 
+function parseFromNameToBeatmapData(name: string) {
+	const player = name.split(', Map: ')[0].split('Player: ')[1];
+	const map = name.split(', Map: ')[1].split(' by ')[0];
+	const mapper = name
+		.split(', Map: ')[1]
+		.split(' by ')[1]
+		.split(', song length')[0];
+	const length = name.match(/\d+:\d+/)?.[0];
+	const star = name.match(/\(\d+\.\d+ \⭐\)/)?.[0];
+	const mods = name.match(/\+\w+/)?.[0];
+	const acc = name.match(/Accuracy: \d+\.?\d+%/)?.[0];
+	function chunkString(str: string, chunkSize: number) {
+		var chunks = [];
+		for (var i = 0, len = str.length; i < len; i += chunkSize) {
+			chunks.push(str.slice(i, i + chunkSize));
+		}
+		return chunks;
+	}
+	return {
+		player,
+		map,
+		mapper,
+		length,
+		star: star?.match(/\d+\.\d+/)?.[0],
+		mods: chunkString(mods?.slice(1) || '', 2),
+		acc: acc?.match(/\d+\.?\d+/)?.[0],
+	};
+}
+
 export class Render extends Wrapper<Partial<RawRenderData>>() {
 	client!: OsuRenderClient;
 	constructor(client: OsuRenderClient, data: Partial<RawRenderData>) {
@@ -50,6 +80,9 @@ export class Render extends Wrapper<Partial<RawRenderData>>() {
 		Object.entries(data).forEach(([key, value]) => {
 			this[key as keyof this] = value as any;
 		});
+	}
+	get parseDescription() {
+		return this.description ? parseFromNameToBeatmapData(this.description) : null;
 	}
 }
 
@@ -120,8 +153,8 @@ declare interface OsuRenderClient {
 class OsuRenderClient extends EventEmitter {
 	socket: Socket = io(WebSocketEndpoint);
 	key?: string;
-	avaliableSkin: Map<string, RawSkinData> = new Map();
-	cache: Map<number, Render> = new Map();
+	avaliableSkin = new Collection<string, RawSkinData>();
+	cache = new Collection<number, Render>();
 	fetchAllSkinsBeforeReady = true;
 	skipAllEventFromOtherClient = false;
 	#_isReady = false;
@@ -152,7 +185,8 @@ class OsuRenderClient extends EventEmitter {
 			'skipAllEventFromOtherClient' in options &&
 			typeof options.skipAllEventFromOtherClient === 'boolean'
 		) {
-			this.skipAllEventFromOtherClient = options.skipAllEventFromOtherClient;
+			this.skipAllEventFromOtherClient =
+				options.skipAllEventFromOtherClient;
 		}
 	}
 	private __loadEvent(ioClient: Socket) {
@@ -302,7 +336,10 @@ class OsuRenderClient extends EventEmitter {
 				.catch(reject);
 		});
 	}
-	public async requestRender(file: FileLike, options: RequestRenderOptions): Promise<Render> {
+	public async requestRender(
+		file: FileLike,
+		options: RequestRenderOptions,
+	): Promise<Render> {
 		if (!this.isReady) throw new Error('Client is not ready yet!');
 		if (this.rateLimitInfo.getTime() > Date.now()) {
 			throw new Error(
@@ -365,10 +402,7 @@ class OsuRenderClient extends EventEmitter {
 						response.headers['x-ratelimit-reset'] ?? 0,
 					);
 					const beatmap = new Render(this, response.data);
-					this.cache.set(
-						response.data.renderID,
-						beatmap,
-					);
+					this.cache.set(response.data.renderID, beatmap);
 					resolve(beatmap);
 				})
 				.catch(reject);
@@ -428,6 +462,9 @@ export interface RequestRenderOptions {
 	showAimErrorMeter?: boolean;
 	playNightcoreSamples?: boolean;
 	customSkin?: boolean;
+	showStrainGraph?: boolean;
+	showSliderBreaks?: boolean;
+	ignoreFail?: boolean;
 }
 
 export interface FetchSkinsOptions {

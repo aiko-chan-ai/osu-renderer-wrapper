@@ -1,6 +1,6 @@
 {
   "name": "osu-renderer-wrapper",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A simple way to create replay beatmaps osu",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -36,12 +36,14 @@
   },
   "homepage": "https://github.com/aiko-chan-ai/osu-renderer-wrapper#readme",
   "dependencies": {
-    "@types/node": "^20.1.0",
+    "@discordjs/collection": "^1.5.3",
     "axios": "1.1",
+    "form-data": "^4.0.0",
     "osureplayparser": "^1.0.1",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {
+    "@types/node": "^20.5.7",
     "esbuild-plugin-version-injector": "^1.1.0",
     "tsup": "^6.7.0",
     "typescript": "^5.0.4"
