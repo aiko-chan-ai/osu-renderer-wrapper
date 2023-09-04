@@ -48,7 +48,7 @@ function parseFromNameToBeatmapData(name: string) {
 		.split(' by ')[1]
 		.split(', song length')[0];
 	const length = name.match(/\d+:\d+/)?.[0];
-	const star = name.match(/\(\d+\.\d+ \⭐\)/)?.[0];
+	const star = name.match(/\(\d+(\.\d+)? \⭐\)/)?.[0];
 	const mods = name.match(/\+\w+/)?.[0];
 	const acc = name.match(/Accuracy: \d+\.?\d+%/)?.[0];
 	function chunkString(str: string, chunkSize: number) {
@@ -63,7 +63,7 @@ function parseFromNameToBeatmapData(name: string) {
 		map,
 		mapper,
 		length,
-		star: star?.match(/\d+\.\d+/)?.[0],
+		star: star?.match(/\d+(\.\d+)?/)?.[0],
 		mods: chunkString(mods?.slice(1) || '', 2),
 		acc: acc?.match(/\d+\.?\d+/)?.[0],
 	};
